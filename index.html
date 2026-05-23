@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cafe Eleven — Banashankari, Bangalore</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- Load default database data -->
+<script src="data.js"></script>
 <style>
   :root {
     --espresso: #0d0d0f;
@@ -32,8 +34,6 @@
     overflow-x: hidden;
     cursor: default;
   }
-
-  /* CURSOR - removed custom, use default */
 
   /* NOISE TEXTURE */
   body::before {
@@ -245,7 +245,6 @@
     max-width: 1200px; margin: 0 auto;
     display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
   }
-  .about-left {}
   .about-desc {
     color: rgba(245,237,224,0.65); line-height: 1.9;
     font-size: 1.05rem; margin-top: 1.5rem; font-weight: 300;
@@ -253,7 +252,6 @@
   .about-stats {
     display: flex; gap: 2.5rem; margin-top: 3rem;
   }
-  .stat-item {}
   .stat-num {
     font-family: 'Playfair Display', serif;
     font-size: 2.5rem; font-weight: 900; color: var(--gold);
@@ -351,35 +349,65 @@
     background: linear-gradient(180deg, var(--espresso), #0a0a10);
     overflow: hidden;
   }
-  .sig-header { max-width: 1200px; margin: 0 auto 4rem; }
+  .sig-header { max-width: 1200px; margin: 0 auto 3rem; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }
+  
+  /* MENU TABS styling */
+  .menu-tabs {
+    display: flex; gap: 0.8rem; list-style: none; overflow-x: auto;
+    scrollbar-width: none; margin-bottom: 0.5rem;
+  }
+  .menu-tabs::-webkit-scrollbar { display: none; }
+  .menu-tab-item button {
+    background: rgba(20, 20, 24, 0.6);
+    border: 1px solid rgba(232, 184, 109, 0.15);
+    color: rgba(245, 237, 224, 0.7);
+    padding: 0.6rem 1.4rem; border-radius: 30px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s; white-space: nowrap;
+  }
+  .menu-tab-item button:hover {
+    border-color: var(--gold); color: var(--cream);
+  }
+  .menu-tab-item.active button {
+    background: var(--gold); color: var(--espresso); font-weight: 600;
+    border-color: var(--gold); box-shadow: 0 4px 15px rgba(232, 184, 109, 0.25);
+  }
+
   .sig-scroll-track {
     display: flex; gap: 1.5rem;
     overflow-x: auto; padding: 1rem 4rem 2rem;
     scrollbar-width: none; -ms-overflow-style: none;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    min-height: 420px;
   }
   .sig-scroll-track::-webkit-scrollbar { display: none; }
   .sig-item {
-    min-width: 280px; height: 380px;
+    min-width: 280px; width: 280px; height: 380px;
     border-radius: 20px; position: relative; overflow: hidden;
     scroll-snap-align: start; cursor: default;
     flex-shrink: 0;
-    transition: transform 0.4s, box-shadow 0.4s;
+    transition: transform 0.4s, box-shadow 0.4s, opacity 0.4s, filter 0.4s;
+  }
+  .sig-item.fade-out {
+    opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(5px);
   }
   .sig-item:hover { transform: scale(1.03) translateY(-5px); box-shadow: 0 40px 80px rgba(0,0,0,0.5); }
-  .sig-bg {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 8rem;
+  .sig-img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.6s; z-index: 0;
+  }
+  .sig-item:hover .sig-img {
+    transform: scale(1.08);
   }
   .sig-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(15,7,3,0.95) 0%, rgba(15,7,3,0.3) 60%, transparent 100%);
+    position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(to top, rgba(13, 13, 15, 0.95) 0%, rgba(13, 13, 15, 0.3) 60%, transparent 100%);
   }
   .sig-content {
     position: absolute; bottom: 0; left: 0; right: 0;
-    padding: 2rem;
+    padding: 2rem; z-index: 2;
   }
   .sig-label {
     font-size: 0.65rem; letter-spacing: 0.3em;
@@ -390,9 +418,14 @@
     font-size: 1.6rem; font-weight: 700; color: var(--cream);
     line-height: 1.2;
   }
+  .sig-desc {
+    font-size: 0.75rem; color: rgba(245,237,224,0.6);
+    line-height: 1.4; font-weight: 300; margin-top: 0.4rem;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
   .sig-price {
     color: var(--gold); font-size: 1rem;
-    margin-top: 0.5rem; font-weight: 500;
+    margin-top: 0.6rem; font-weight: 500;
   }
 
   /* PARALLAX BANNER */
@@ -440,24 +473,20 @@
   .gallery-item:hover { transform: scale(1.03); z-index: 2; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
   .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
   .gallery-item:nth-child(4) { grid-column: span 2; }
-  .g-bg {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 5rem;
+  
+  .gallery-img {
+    width: 100%; height: 100%; object-fit: cover;
     transition: transform 0.6s;
   }
-  .gallery-item:hover .g-bg { transform: scale(1.1); }
-  .g1 { background: linear-gradient(135deg, #3d1a08, #6b3d1e); }
-  .g2 { background: linear-gradient(135deg, #2c1205, #4a2010); }
-  .g3 { background: linear-gradient(135deg, #1a0d05, #3d2010); }
-  .g4 { background: linear-gradient(135deg, #4a2510, #2c1a0e); }
-  .g5 { background: linear-gradient(135deg, #2a1508, #5a3018); }
+  .gallery-item:hover .gallery-img { transform: scale(1.1); }
+  
   .gallery-label {
     position: absolute; bottom: 0; left: 0; right: 0;
     padding: 1.5rem; background: linear-gradient(to top, rgba(10,5,2,0.9), transparent);
     font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
-    color: rgba(245,237,224,0.7);
+    color: rgba(245,237,224,0.9); z-index: 2;
     transform: translateY(100%); transition: transform 0.3s;
+    font-weight: 500;
   }
   .gallery-item:hover .gallery-label { transform: translateY(0); }
 
@@ -516,7 +545,6 @@
     max-width: 1200px; margin: 0 auto;
     display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start;
   }
-  .contact-info {}
   .contact-detail {
     display: flex; gap: 1.5rem; align-items: flex-start;
     margin-bottom: 2rem; padding-bottom: 2rem;
@@ -667,19 +695,220 @@
   @keyframes loaderFill {
     from { width: 0%; } to { width: 100%; }
   }
+
+  /* ==========================================================================
+     CMS ADMIN PORTAL CSS
+     ========================================================================== */
+  #admin-launcher {
+    position: fixed; bottom: 25px; right: 25px; z-index: 9999;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(20, 20, 24, 0.85);
+    border: 1px solid rgba(232, 184, 109, 0.3);
+    color: var(--gold); font-size: 1.5rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(232, 184, 109, 0.15);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+  }
+  #admin-launcher:hover {
+    transform: rotate(45deg) scale(1.1);
+    border-color: var(--gold);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 25px rgba(232, 184, 109, 0.35);
+  }
+
+  #cms-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    background: rgba(8, 8, 10, 0.75);
+    backdrop-filter: blur(20px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    padding: 2rem;
+  }
+  #cms-overlay.active {
+    opacity: 1; visibility: visible;
+  }
+  .cms-window {
+    width: 100%; max-width: 1100px; height: 80vh;
+    background: linear-gradient(135deg, rgba(20, 20, 24, 0.98), rgba(13, 13, 15, 0.99));
+    border: 1px solid rgba(232, 184, 109, 0.2);
+    border-radius: 24px; display: flex; flex-direction: column;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9), 0 0 1px 1px rgba(124, 106, 255, 0.15);
+    overflow: hidden;
+    transform: scale(0.95); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  #cms-overlay.active .cms-window {
+    transform: scale(1);
+  }
+  .cms-header {
+    padding: 1.5rem 2.5rem; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(232, 184, 109, 0.15);
+    background: rgba(20, 20, 24, 0.6);
+  }
+  .cms-header h2 {
+    font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--cream);
+  }
+  .cms-header h2 span {
+    font-family: 'DM Sans', sans-serif; font-size: 0.75rem; background: rgba(232, 184, 109, 0.15);
+    color: var(--gold); padding: 0.25rem 0.6rem; border-radius: 4px; margin-left: 0.8rem;
+    vertical-align: middle; border: 1px solid rgba(232, 184, 109, 0.3);
+  }
+  .cms-close-btn {
+    background: transparent; border: none; color: var(--muted); font-size: 2rem;
+    cursor: pointer; transition: color 0.3s; line-height: 1;
+  }
+  .cms-close-btn:hover { color: var(--gold); }
+  .cms-body {
+    flex: 1; display: flex; overflow: hidden;
+  }
+  .cms-sidebar {
+    width: 240px; padding: 2rem 1rem; display: flex; flex-direction: column; gap: 0.6rem;
+    border-right: 1px solid rgba(232, 184, 109, 0.1); background: rgba(10, 10, 12, 0.4);
+  }
+  .cms-tab-btn {
+    background: transparent; border: none; color: var(--muted); padding: 0.9rem 1.5rem;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; text-align: left;
+    border-radius: 12px; cursor: pointer; transition: all 0.3s;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .cms-tab-btn:hover {
+    color: var(--cream); background: rgba(232, 184, 109, 0.05);
+  }
+  .cms-tab-btn.active {
+    color: var(--espresso); background: var(--gold); font-weight: 600;
+    box-shadow: 0 4px 20px rgba(232, 184, 109, 0.3);
+  }
+  .cms-content {
+    flex: 1; padding: 2.5rem; overflow-y: auto; height: 100%;
+    scrollbar-width: thin; scrollbar-color: rgba(232, 184, 109, 0.2) transparent;
+  }
+  .cms-content::-webkit-scrollbar { width: 6px; }
+  .cms-content::-webkit-scrollbar-thumb { background: rgba(232, 184, 109, 0.25); border-radius: 3px; }
+  
+  .cms-section-title {
+    font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .cms-section-subtitle {
+    font-size: 0.85rem; color: var(--muted); margin-bottom: 2rem;
+  }
+  .cms-form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;
+  }
+  .cms-form-group {
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .cms-form-group.full-width {
+    grid-column: span 2;
+  }
+  .cms-label {
+    font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold);
+    font-weight: 500;
+  }
+  .cms-input, .cms-textarea, .cms-select {
+    background: rgba(20, 20, 24, 0.7); border: 1px solid rgba(232, 184, 109, 0.15);
+    color: var(--cream); padding: 0.8rem 1rem; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; transition: all 0.3s;
+  }
+  .cms-input:focus, .cms-textarea:focus, .cms-select:focus {
+    border-color: var(--gold); outline: none; background: rgba(20, 20, 24, 0.95);
+    box-shadow: 0 0 10px rgba(232, 184, 109, 0.15);
+  }
+  .cms-textarea { resize: vertical; min-height: 80px; }
+  
+  .cms-btn {
+    background: var(--gold); color: var(--espresso); border: none; padding: 0.8rem 2rem;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 0.05em; border-radius: 8px; cursor: pointer; transition: all 0.3s;
+    align-self: flex-start;
+  }
+  .cms-btn:hover {
+    transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232, 184, 109, 0.3);
+  }
+  .cms-btn-secondary {
+    background: transparent; color: var(--cream); border: 1px solid rgba(240, 236, 228, 0.25);
+  }
+  .cms-btn-secondary:hover {
+    background: rgba(255,255,255,0.05); border-color: var(--cream);
+  }
+  .cms-btn-danger {
+    background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.35);
+  }
+  .cms-btn-danger:hover {
+    background: rgba(239, 68, 68, 0.25); box-shadow: 0 8px 24px rgba(239, 68, 68, 0.25);
+  }
+  
+  .cms-item-list {
+    display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;
+  }
+  .cms-item-row {
+    background: rgba(20, 20, 24, 0.5); border: 1px solid rgba(232, 184, 109, 0.1);
+    border-radius: 12px; padding: 1.2rem; display: flex; align-items: center; justify-content: space-between;
+    gap: 1.5rem; transition: border-color 0.3s;
+  }
+  .cms-item-row:hover {
+    border-color: rgba(232, 184, 109, 0.25);
+  }
+  .cms-item-info {
+    display: flex; align-items: center; gap: 1.2rem;
+  }
+  .cms-item-thumb {
+    width: 56px; height: 56px; border-radius: 8px; object-fit: cover;
+    background: rgba(232, 184, 109, 0.1); border: 1px solid rgba(232, 184, 109, 0.2);
+  }
+  .cms-item-details {}
+  .cms-item-name {
+    font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--cream);
+  }
+  .cms-item-meta {
+    font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; display: flex; gap: 0.8rem;
+  }
+  .cms-item-actions {
+    display: flex; gap: 0.5rem;
+  }
+  
+  .cms-empty-state {
+    text-align: center; padding: 3rem; color: var(--muted);
+  }
+  
+  .cms-code-box {
+    background: #070709; border: 1px solid rgba(232, 184, 109, 0.15);
+    border-radius: 12px; padding: 1.5rem; font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem; color: #a6accd; max-height: 250px; overflow-y: auto;
+    margin-bottom: 1.5rem; white-space: pre-wrap;
+  }
+  
+  .cms-tab-content { display: none; }
+  .cms-tab-content.active { display: block; }
+  
+  .cms-toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(120px);
+    background: rgba(20, 20, 24, 0.95); border: 1px solid var(--gold); color: var(--cream);
+    padding: 1rem 2.2rem; border-radius: 50px; font-size: 0.9rem; font-weight: 500;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7); z-index: 999999;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .cms-toast.active {
+    transform: translateX(-50%) translateY(0);
+  }
+  
+  .cms-tab-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;
+  }
 </style>
 </head>
 <body>
 
 <!-- LOADER -->
 <div id="loader">
-  <div class="loader-logo">Cafe <span>Eleven</span></div>
+  <div class="loader-logo" id="loader-logo">Cafe <span>Eleven</span></div>
   <div class="loader-bar-track"><div class="loader-bar"></div></div>
 </div>
 
 <!-- NAVBAR -->
 <nav id="navbar">
-  <a href="#" class="nav-logo">Cafe <span>Eleven</span></a>
+  <a href="#" class="nav-logo" id="nav-logo">Cafe <span>Eleven</span></a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#features">Experience</a></li>
@@ -712,9 +941,9 @@
   </svg>
 
   <div class="hero-content">
-    <div class="hero-eyebrow">☕ Banashankari, Bangalore</div>
-    <h1 class="hero-title">Where Bangalore<br><em>Slows Down.</em></h1>
-    <p class="hero-sub">Coffee, conversations, and cozy nights at Cafe Eleven. Your hidden corner in the heart of Banashankari.</p>
+    <div class="hero-eyebrow" id="hero-eyebrow">☕ Banashankari, Bangalore</div>
+    <h1 class="hero-title" id="hero-title">Where Bangalore<br><em>Slows Down.</em></h1>
+    <p class="hero-sub" id="hero-sub">Coffee, conversations, and cozy nights at Cafe Eleven. Your hidden corner in the heart of Banashankari.</p>
     <div class="hero-btns">
       <a href="#contact" class="btn-primary">Visit Cafe</a>
       <a href="#signature" class="btn-outline">View Menu</a>
@@ -732,20 +961,20 @@
   <div class="about-grid">
     <div class="about-left">
       <div class="section-tag reveal">Our Story</div>
-      <h2 class="section-title reveal reveal-delay-1">Not just a café.<br><em>A feeling.</em></h2>
-      <p class="about-desc reveal reveal-delay-2">
+      <h2 class="section-title reveal reveal-delay-1" id="about-title">Not just a café.<br><em>A feeling.</em></h2>
+      <p class="about-desc reveal reveal-delay-2" id="about-desc-1">
         Tucked away near Yes Bank in Banashankari 3rd Stage, Cafe Eleven isn't just a place to grab coffee — it's where Bangalore nights come alive. Outdoor seating, the soft glow of warm lights, a hookah cloud drifting through conversations — this is where time slows and stories grow.
       </p>
-      <p class="about-desc reveal reveal-delay-2" style="margin-top:1rem;">
+      <p class="about-desc reveal reveal-delay-2" id="about-desc-2" style="margin-top:1rem;">
         Born from the idea that every city needs a corner that feels like home, Cafe Eleven is that corner for Banashankari.
       </p>
       <div class="about-stats">
         <div class="stat-item reveal reveal-delay-3">
-          <div class="stat-num">4.2★</div>
-          <div class="stat-label">Rated on JustDial</div>
+          <div class="stat-num" id="stat-rating">4.2★</div>
+          <div class="stat-label" id="stat-rating-label">Rated on JustDial</div>
         </div>
         <div class="stat-item reveal reveal-delay-3">
-          <div class="stat-num">11:30</div>
+          <div class="stat-num" id="stat-hours">11:30</div>
           <div class="stat-label">Open Till Night</div>
         </div>
         <div class="stat-item reveal reveal-delay-4">
@@ -810,7 +1039,7 @@
           <text x="215" y="185" font-size="14">☕</text>
           <!-- Cafe sign -->
           <rect x="135" y="110" width="80" height="30" rx="5" fill="rgba(107,61,30,0.6)" stroke="rgba(201,168,76,0.5)" stroke-width="1.5"/>
-          <text x="175" y="129" text-anchor="middle" font-family="serif" font-size="11" fill="rgba(201,168,76,0.9)">Cafe Eleven</text>
+          <text x="175" y="129" text-anchor="middle" font-family="serif" font-size="11" fill="rgba(201,168,76,0.9)" id="svg-cafe-sign">Cafe Eleven</text>
           <!-- People silhouettes -->
           <ellipse cx="75" cy="183" rx="12" ry="15" fill="rgba(26,10,3,0.7)"/>
           <circle cx="75" cy="167" r="7" fill="rgba(26,10,3,0.7)"/>
@@ -854,7 +1083,7 @@
     </div>
     <div class="feature-card reveal reveal-delay-4">
       <div class="feature-icon">🌙</div>
-      <div class="feature-name">Open Till 11:30 PM</div>
+      <div class="feature-name">Open Till Late Night</div>
       <div class="feature-desc">When every other café closes, Eleven stays open. Yours for the late night crowd.</div>
     </div>
   </div>
@@ -863,55 +1092,17 @@
 <!-- SIGNATURE MENU -->
 <section id="signature">
   <div class="sig-header">
-    <div class="section-tag reveal">Our Signatures</div>
-    <h2 class="section-title reveal reveal-delay-1">Crafted for<br><em>the moment</em></h2>
+    <div>
+      <div class="section-tag reveal">Our Signatures</div>
+      <h2 class="section-title reveal reveal-delay-1">Crafted for<br><em>the moment</em></h2>
+    </div>
+    <!-- Menu categories filter tabs -->
+    <ul class="menu-tabs reveal reveal-delay-2" id="menu-tabs-container">
+      <!-- Generated dynamically -->
+    </ul>
   </div>
-  <div class="sig-scroll-track">
-    <div class="sig-item">
-      <div class="sig-bg g1" style="background:linear-gradient(135deg,#1e1020,#2d1545);font-size:8rem;">☕</div>
-      <div class="sig-overlay"></div>
-      <div class="sig-content">
-        <div class="sig-label">Hot Coffee</div>
-        <div class="sig-name">Classic Cappuccino</div>
-        <div class="sig-price">₹ 80 – 120</div>
-      </div>
-    </div>
-    <div class="sig-item">
-      <div class="sig-bg g2" style="background:linear-gradient(135deg,#0d1a2c,#0a2535);font-size:7rem;">🧊</div>
-      <div class="sig-overlay"></div>
-      <div class="sig-content">
-        <div class="sig-label">Cold Sips</div>
-        <div class="sig-name">Cold Coffee</div>
-        <div class="sig-price">₹ 90 – 140</div>
-      </div>
-    </div>
-    <div class="sig-item">
-      <div class="sig-bg" style="background:linear-gradient(135deg,#0e1a10,#152a18);font-size:7rem;">🍜</div>
-      <div class="sig-overlay"></div>
-      <div class="sig-content">
-        <div class="sig-label">Bites</div>
-        <div class="sig-name">Chinese Snacks</div>
-        <div class="sig-price">₹ 100 – 200</div>
-      </div>
-    </div>
-    <div class="sig-item">
-      <div class="sig-bg" style="background:linear-gradient(135deg,#1a0820,#2c0a38);font-size:7rem;">💨</div>
-      <div class="sig-overlay"></div>
-      <div class="sig-content">
-        <div class="sig-label">Signature</div>
-        <div class="sig-name">Premium Hookah</div>
-        <div class="sig-price">Ask at the counter</div>
-      </div>
-    </div>
-    <div class="sig-item">
-      <div class="sig-bg" style="background:linear-gradient(135deg,#0a0f20,#151c35);font-size:7rem;">🌙</div>
-      <div class="sig-overlay"></div>
-      <div class="sig-content">
-        <div class="sig-label">Evening</div>
-        <div class="sig-name">Late Night Hangs</div>
-        <div class="sig-price">Open till 11:30 PM</div>
-      </div>
-    </div>
+  <div class="sig-scroll-track" id="menu-track">
+    <!-- Generated dynamically -->
   </div>
 </section>
 
@@ -921,27 +1112,8 @@
     <div class="section-tag reveal">Gallery</div>
     <h2 class="section-title reveal reveal-delay-1">Eleven after <em>dark</em></h2>
   </div>
-  <div class="gallery-grid">
-    <div class="gallery-item">
-      <div class="g-bg g1" style="height:100%;background:linear-gradient(135deg,#1e1030,#2d1845);font-size:8rem;">🌿</div>
-      <div class="gallery-label">Outdoor Seating</div>
-    </div>
-    <div class="gallery-item">
-      <div class="g-bg g2" style="height:100%;background:linear-gradient(135deg,#0d1525,#1a2535);font-size:6rem;">☕</div>
-      <div class="gallery-label">Handcrafted Coffee</div>
-    </div>
-    <div class="gallery-item">
-      <div class="g-bg g3" style="height:100%;background:linear-gradient(135deg,#100a20,#1e1040);font-size:6rem;">💨</div>
-      <div class="gallery-label">Hookah Lounge</div>
-    </div>
-    <div class="gallery-item">
-      <div class="g-bg" style="height:100%;background:linear-gradient(135deg,#0a0f1a,#141e30);font-size:6rem;">🌙</div>
-      <div class="gallery-label">Night Vibes</div>
-    </div>
-    <div class="gallery-item">
-      <div class="g-bg" style="height:100%;background:linear-gradient(135deg,#0e1520,#1a2535);font-size:6rem;">👥</div>
-      <div class="gallery-label">Friends & Conversations</div>
-    </div>
+  <div class="gallery-grid" id="gallery-grid-container">
+    <!-- Generated dynamically -->
   </div>
 </section>
 
@@ -951,7 +1123,7 @@
   <div class="banner-text reveal">
     Not Just Coffee.<br><span>A Feeling.</span>
   </div>
-  <p class="banner-sub reveal reveal-delay-2">Banashankari's most loved late-night escape</p>
+  <p class="banner-sub reveal reveal-delay-2" id="banner-tagline">Banashankari's most loved late-night escape</p>
 </section>
 
 <!-- REVIEWS -->
@@ -959,27 +1131,13 @@
   <div class="reviews-header">
     <div class="section-tag reveal" style="justify-content:center;">Reviews</div>
     <div class="rating-badge reveal reveal-delay-1">
-      <span class="rating-stars">★★★★☆</span>
-      <span style="color:var(--cream);font-size:0.9rem;">4.2 on JustDial</span>
+      <span class="rating-stars" id="reviews-stars-label">★★★★☆</span>
+      <span style="color:var(--cream);font-size:0.9rem;" id="reviews-count-label">4.2 on JustDial</span>
     </div>
     <h2 class="section-title reveal reveal-delay-2" style="text-align:center;">Heard from the<br><em>regulars</em></h2>
   </div>
-  <div class="reviews-grid">
-    <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">"Best late-night coffee vibe in all of Banashankari. The outdoor seating under string lights is just perfect."</p>
-      <div class="review-author">— Hemaram · Dec 2022</div>
-    </div>
-    <div class="review-card reveal reveal-delay-1">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">"Perfect place for conversations that go on till midnight. It genuinely feels like a hidden Bangalore gem."</p>
-      <div class="review-author">— Mr. Tejas · Sept 2020</div>
-    </div>
-    <div class="review-card reveal reveal-delay-2">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">"Cafe Eleven has this warm, unhurried energy that you don't find anywhere else in the area. We keep coming back."</p>
-      <div class="review-author">— Jagadeesh · Oct 2020</div>
-    </div>
+  <div class="reviews-grid" id="reviews-grid-container">
+    <!-- Generated dynamically -->
   </div>
 </section>
 
@@ -994,36 +1152,32 @@
           <div class="contact-icon">📍</div>
           <div>
             <div class="contact-label">Address</div>
-            <div class="contact-value">284, Outer Ring Road, Next to Yes Bank,<br>4th Phase, Banashankari 3rd Stage,<br>Bangalore – 560085, Karnataka</div>
+            <div class="contact-value" id="contact-address">284, Outer Ring Road, Next to Yes Bank,<br>4th Phase, Banashankari 3rd Stage,<br>Bangalore – 560085, Karnataka</div>
           </div>
         </div>
         <div class="contact-detail reveal reveal-delay-2">
           <div class="contact-icon">🕙</div>
           <div>
             <div class="contact-label">Hours</div>
-            <div class="contact-value">Mon–Sun: 10:00 AM – 11:30 PM</div>
+            <div class="contact-value" id="contact-hours">Mon–Sun: 10:00 AM – 11:30 PM</div>
           </div>
         </div>
         <div class="contact-detail reveal reveal-delay-3">
           <div class="contact-icon">🍽️</div>
           <div>
             <div class="contact-label">Cuisine</div>
-            <div class="contact-value">Chinese · Coffee · Hookah Parlour</div>
+            <div class="contact-value" id="contact-cuisine">Chinese · Coffee · Hookah Parlour</div>
           </div>
         </div>
       </div>
-      <div class="contact-btns reveal reveal-delay-4">
-        <a href="https://wa.me/" class="contact-btn btn-whatsapp">💬 WhatsApp</a>
-        <a href="tel:" class="contact-btn btn-call">📞 Call Us</a>
-        <a href="https://instagram.com" class="contact-btn btn-insta">📸 Instagram</a>
+      <div class="contact-btns reveal reveal-delay-4" id="contact-links-container">
+        <!-- Generated dynamically -->
       </div>
     </div>
     <div class="reveal reveal-delay-2">
       <div class="map-placeholder">
-        <div class="map-placeholder-text">
-          <div class="map-address">Cafe Eleven, Banashankari 3rd Stage</div>
-          <div style="color:var(--muted);font-size:0.85rem;margin:0.4rem 0 1rem;">Outer Ring Road, Bangalore 560085</div>
-          <a href="https://maps.google.com/?q=Cafe+Eleven+Banashankari+3rd+Stage+Bangalore" target="_blank" class="map-link">Get Directions →</a>
+        <div class="map-placeholder-text" id="map-container">
+          <!-- Generated dynamically -->
         </div>
       </div>
     </div>
@@ -1033,38 +1187,532 @@
 <!-- FOOTER -->
 <footer>
   <div>
-    <div class="footer-logo">Cafe <span>Eleven</span></div>
-    <div class="footer-tagline">Where Bangalore Slows Down · Since Always</div>
+    <div class="footer-logo" id="footer-logo">Cafe <span>Eleven</span></div>
+    <div class="footer-tagline" id="footer-tagline">Where Bangalore Slows Down · Since Always</div>
   </div>
   <ul class="footer-links">
     <li><a href="#about">About</a></li>
     <li><a href="#signature">Menu</a></li>
     <li><a href="#gallery">Gallery</a></li>
     <li><a href="#contact">Contact</a></li>
+    <li><a href="javascript:void(0)" onclick="toggleCMS()" style="color: var(--gold); border: 1px solid rgba(232,184,109,0.2); padding: 0.25rem 0.6rem; border-radius: 4px;">CMS Admin</a></li>
   </ul>
-  <div class="footer-copy">© 2025 Cafe Eleven, Banashankari</div>
+  <div class="footer-copy" id="footer-copy">© 2026 Cafe Eleven, Banashankari</div>
 </footer>
 
+<!-- ==========================================================================
+     CMS ADMIN DASHBOARD (GLASSMORPHIC OVERLAY)
+     ========================================================================== -->
+<div id="admin-launcher" title="Open CMS Dashboard" onclick="toggleCMS()">⚙️</div>
+
+<div id="cms-overlay">
+  <div class="cms-window">
+    <div class="cms-header">
+      <h2>Cafe Craft CMS <span>Admin Dashboard</span></h2>
+      <button class="cms-close-btn" onclick="toggleCMS()">×</button>
+    </div>
+    <div class="cms-body">
+      <div class="cms-sidebar">
+        <button class="cms-tab-btn active" data-tab="general" onclick="switchTab('general')">📋 Profile Info</button>
+        <button class="cms-tab-btn" data-tab="menu" onclick="switchTab('menu')">🍔 Menu Editor</button>
+        <button class="cms-tab-btn" data-tab="gallery" onclick="switchTab('gallery')">🖼️ Gallery</button>
+        <button class="cms-tab-btn" data-tab="reviews" onclick="switchTab('reviews')">💬 Reviews</button>
+        <button class="cms-tab-btn" data-tab="sync" onclick="switchTab('sync')" style="margin-top: auto; border-top: 1px solid rgba(232,184,109,0.1); border-radius: 0; padding-top: 1.5rem;">⚙️ Dev Sync</button>
+      </div>
+      
+      <div class="cms-content">
+        <!-- ==================== TAB: GENERAL ==================== -->
+        <div class="cms-tab-content active" id="tab-general">
+          <div class="cms-tab-header">
+            <div>
+              <h3 class="cms-section-title">Cafe Profile</h3>
+              <p class="cms-section-subtitle">Manage basic cafe information, business details, and contact coordinates.</p>
+            </div>
+            <button class="cms-btn" onclick="saveGeneralSettings()">Save Profile</button>
+          </div>
+          <div class="cms-form-grid">
+            <div class="cms-form-group">
+              <label class="cms-label">Cafe Name</label>
+              <input type="text" class="cms-input" id="inp-name">
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Tagline (Hero Title First Line)</label>
+              <input type="text" class="cms-input" id="inp-tagline">
+            </div>
+            <div class="cms-form-group full-width">
+              <label class="cms-label">Subtagline (Hero Description)</label>
+              <textarea class="cms-textarea" id="inp-subtagline"></textarea>
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Location (e.g. Banashankari, Bangalore)</label>
+              <input type="text" class="cms-input" id="inp-location">
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Cuisine (separated by middle dots)</label>
+              <input type="text" class="cms-input" id="inp-cuisine">
+            </div>
+            <div class="cms-form-group full-width">
+              <label class="cms-label">Full Address</label>
+              <textarea class="cms-textarea" id="inp-address"></textarea>
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Working Hours Description</label>
+              <input type="text" class="cms-input" id="inp-hours">
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Closing Time (e.g., 11:30 PM)</label>
+              <input type="text" class="cms-input" id="inp-hours-short">
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Phone Number</label>
+              <input type="text" class="cms-input" id="inp-phone">
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">WhatsApp Number (Digits only, e.g., 919876543210)</label>
+              <input type="text" class="cms-input" id="inp-whatsapp">
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Instagram Username/Link</label>
+              <input type="text" class="cms-input" id="inp-instagram">
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Google Maps Directions Query</label>
+              <input type="text" class="cms-input" id="inp-maps">
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Overall Rating Text (e.g. 4.2 on JustDial)</label>
+              <input type="text" class="cms-input" id="inp-rating-text">
+            </div>
+            <div class="cms-form-group">
+              <label class="cms-label">Overall Rating Stars (e.g. ★★★★☆)</label>
+              <input type="text" class="cms-input" id="inp-rating-stars">
+            </div>
+          </div>
+        </div>
+        
+        <!-- ==================== TAB: MENU ==================== -->
+        <div class="cms-tab-content" id="tab-menu">
+          <div class="cms-tab-header">
+            <div>
+              <h3 class="cms-section-title">Menu Management</h3>
+              <p class="cms-section-subtitle">Create, edit, or delete items on your signatures and snacks menu.</p>
+            </div>
+            <button class="cms-btn" onclick="openMenuModal()">+ Add Menu Item</button>
+          </div>
+          
+          <!-- Menu Item Form (Add / Edit) -->
+          <div id="menu-editor-form" style="display:none; background: rgba(232, 184, 109, 0.05); border: 1px solid rgba(232, 184, 109, 0.2); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;">
+            <h4 id="menu-form-title" style="font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 1rem; font-size: 1.2rem;">Add New Item</h4>
+            <input type="hidden" id="inp-menu-id">
+            <div class="cms-form-grid" style="margin-bottom: 1rem;">
+              <div class="cms-form-group">
+                <label class="cms-label">Item Name</label>
+                <input type="text" class="cms-input" id="inp-menu-name" placeholder="e.g. Iced Latte">
+              </div>
+              <div class="cms-form-group">
+                <label class="cms-label">Price Description</label>
+                <input type="text" class="cms-input" id="inp-menu-price" placeholder="e.g. ₹ 90 – 120">
+              </div>
+              <div class="cms-form-group">
+                <label class="cms-label">Category</label>
+                <select class="cms-select" id="inp-menu-category" onchange="syncCategoryName(this.value)">
+                  <option value="hot-coffee">Hot Coffee</option>
+                  <option value="cold-sips">Cold Sips</option>
+                  <option value="snacks">Bites</option>
+                  <option value="signatures">Signature</option>
+                </select>
+                <input type="hidden" id="inp-menu-category-name" value="Hot Coffee">
+              </div>
+              <div class="cms-form-group">
+                <label class="cms-label">Image Asset URL/Path</label>
+                <select class="cms-select" id="inp-menu-image">
+                  <option value="images/cappuccino.png">Espresso / Cappuccino Image</option>
+                  <option value="images/iced_coffee.png">Iced Coffee Image</option>
+                  <option value="images/chinese_snacks.png">Chinese Bites Image</option>
+                  <option value="images/hookah_lounge.png">Hookah Lounge Image</option>
+                  <option value="images/outdoor_seating.png">Outdoor Seating Image</option>
+                </select>
+              </div>
+              <div class="cms-form-group full-width">
+                <label class="cms-label">Description</label>
+                <textarea class="cms-textarea" id="inp-menu-desc" placeholder="Brief tempting description of the item..."></textarea>
+              </div>
+            </div>
+            <div style="display:flex; gap: 0.5rem;">
+              <button class="cms-btn" onclick="saveMenuItem()">Save Item</button>
+              <button class="cms-btn cms-btn-secondary" onclick="closeMenuModal()">Cancel</button>
+            </div>
+          </div>
+          
+          <div class="cms-item-list" id="cms-menu-list">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+        
+        <!-- ==================== TAB: GALLERY ==================== -->
+        <div class="cms-tab-content" id="tab-gallery">
+          <div class="cms-tab-header">
+            <div>
+              <h3 class="cms-section-title">Gallery Management</h3>
+              <p class="cms-section-subtitle">Update captions and photos in the dynamic homepage visual grid.</p>
+            </div>
+          </div>
+          
+          <div class="cms-form-grid" id="cms-gallery-grid-editor" style="grid-template-columns: 1fr;">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+        
+        <!-- ==================== TAB: REVIEWS ==================== -->
+        <div class="cms-tab-content" id="tab-reviews">
+          <div class="cms-tab-header">
+            <div>
+              <h3 class="cms-section-title">Reviews Carousel</h3>
+              <p class="cms-section-subtitle">Manage customer testimonies and reviews published on the homepage.</p>
+            </div>
+            <button class="cms-btn" onclick="openReviewModal()">+ Add Review</button>
+          </div>
+          
+          <!-- Review Form (Add / Edit) -->
+          <div id="review-editor-form" style="display:none; background: rgba(232, 184, 109, 0.05); border: 1px solid rgba(232, 184, 109, 0.2); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;">
+            <h4 id="review-form-title" style="font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 1rem; font-size: 1.2rem;">Add Customer Review</h4>
+            <input type="hidden" id="inp-rev-id">
+            <div class="cms-form-grid" style="margin-bottom: 1rem;">
+              <div class="cms-form-group">
+                <label class="cms-label">Author Name</label>
+                <input type="text" class="cms-input" id="inp-rev-author" placeholder="e.g. Hemaram">
+              </div>
+              <div class="cms-form-group">
+                <label class="cms-label">Date Label</label>
+                <input type="text" class="cms-input" id="inp-rev-date" placeholder="e.g. Dec 2022">
+              </div>
+              <div class="cms-form-group">
+                <label class="cms-label">Rating Stars</label>
+                <select class="cms-select" id="inp-rev-stars">
+                  <option value="★★★★★">★★★★★ (5 Stars)</option>
+                  <option value="★★★★☆">★★★★☆ (4 Stars)</option>
+                  <option value="★★★☆☆">★★★☆☆ (3 Stars)</option>
+                  <option value="★★☆☆☆">★★☆☆☆ (2 Stars)</option>
+                  <option value="★☆☆☆☆">★☆☆☆☆ (1 Star)</option>
+                </select>
+              </div>
+              <div class="cms-form-group full-width">
+                <label class="cms-label">Review Text</label>
+                <textarea class="cms-textarea" id="inp-rev-text" placeholder="&quot;Best coffee vibe...&quot;"></textarea>
+              </div>
+            </div>
+            <div style="display:flex; gap: 0.5rem;">
+              <button class="cms-btn" onclick="saveReviewItem()">Save Review</button>
+              <button class="cms-btn cms-btn-secondary" onclick="closeReviewModal()">Cancel</button>
+            </div>
+          </div>
+          
+          <div class="cms-item-list" id="cms-reviews-list">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+        
+        <!-- ==================== TAB: DEVELOPER SYNC ==================== -->
+        <div class="cms-tab-content" id="tab-sync">
+          <h3 class="cms-section-title">Developer & Sync Tools</h3>
+          <p class="cms-section-subtitle">Synchronize, back up, or bake CMS changes into your codebase.</p>
+          
+          <div style="background: rgba(232, 184, 109, 0.05); border: 1px solid rgba(232, 184, 109, 0.15); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;">
+            <h4 style="font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 0.6rem; font-size: 1.2rem;">Persist changes permanently to data.js</h4>
+            <p style="font-size: 0.85rem; color: var(--cream); line-height: 1.6; margin-bottom: 1.2rem;">
+              To make your customized menu, reviews, and cafe settings permanent, copy the dynamically generated database code below and paste it to completely overwrite `/Users/katyanireddy/Desktop/cafe-craft-cms/data.js` or save it directly using the file download utility.
+            </p>
+            <div class="cms-code-box" id="cms-data-js-preview">
+              <!-- Dynamically populated -->
+            </div>
+            <div style="display: flex; gap: 0.8rem;">
+              <button class="cms-btn" onclick="copyDataJSCode()">📋 Copy Code</button>
+              <button class="cms-btn cms-btn-secondary" onclick="downloadDataJSFile()">💾 Download data.js</button>
+            </div>
+          </div>
+          
+          <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 16px; padding: 2rem;">
+            <h4 style="font-family: 'Playfair Display', serif; color: #ef4444; margin-bottom: 0.6rem; font-size: 1.2rem;">System Settings & Reset</h4>
+            <p style="font-size: 0.85rem; color: var(--cream); line-height: 1.6; margin-bottom: 1.2rem;">
+              If you want to clear your current customized database state and load the fresh default data initialized in your local files, click "Reset to Defaults".
+            </p>
+            <button class="cms-btn cms-btn-danger" onclick="resetToDefaults()">Reset to Defaults</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CMS TOAST NOTIFICATION -->
+<div id="cms-toast" class="cms-toast">
+  <span id="cms-toast-icon">✨</span> <span id="cms-toast-msg">Settings saved successfully!</span>
+</div>
+
 <script>
-  // Loader
-  window.addEventListener('load', () => {
+  // ==========================================================================
+  // Core Website JS & Load State
+  // ==========================================================================
+  let cafeData = null;
+  let activeMenuCategory = 'all';
+
+  // State loader
+  function loadCafeData() {
+    const localData = localStorage.getItem('cafe_craft_cms_data');
+    if (localData) {
+      try {
+        cafeData = JSON.parse(localData);
+      } catch (e) {
+        console.error("Error parsing local cafe data, falling back to default", e);
+        cafeData = DEFAULT_CAFE_DATA;
+      }
+    } else {
+      cafeData = DEFAULT_CAFE_DATA;
+      localStorage.setItem('cafe_craft_cms_data', JSON.stringify(cafeData));
+    }
+  }
+
+  // Load and render site
+  window.addEventListener('DOMContentLoaded', () => {
+    loadCafeData();
+    renderSite();
+    
+    // Loader hide
     setTimeout(() => {
       document.getElementById('loader').classList.add('hidden');
     }, 1400);
   });
 
-  // Navbar scroll
+  // Render everything
+  function renderSite() {
+    // 1. Profile fields
+    document.title = cafeData.profile.name + " — " + cafeData.profile.locationName;
+    document.getElementById('nav-logo').innerHTML = formatLogoText(cafeData.profile.name);
+    document.getElementById('loader-logo').innerHTML = formatLogoText(cafeData.profile.name);
+    document.getElementById('footer-logo').innerHTML = formatLogoText(cafeData.profile.name);
+    
+    document.getElementById('hero-eyebrow').innerText = cafeData.profile.eyebrow;
+    document.getElementById('hero-title').innerHTML = formatHeadingHtml(cafeData.profile.tagline);
+    document.getElementById('hero-sub').innerText = cafeData.profile.subtagline;
+    
+    document.getElementById('about-title').innerHTML = formatHeadingHtml(cafeData.profile.tagline);
+    document.getElementById('stat-rating').innerText = cafeData.profile.ratingStars.split('★').length - 1 + ".2★";
+    document.getElementById('stat-rating-label').innerText = "Rated on " + cafeData.profile.ratingBadge.split('on ')[1];
+    document.getElementById('stat-hours').innerText = cafeData.profile.hoursShort;
+    document.getElementById('svg-cafe-sign').textContent = cafeData.profile.name;
+    
+    document.getElementById('banner-tagline').innerText = cafeData.profile.name + "'s most loved late-night escape";
+    document.getElementById('footer-tagline').innerText = "Where Bangalore Slows Down · Since Always";
+    document.getElementById('footer-copy').innerText = `© ${new Date().getFullYear()} ${cafeData.profile.name}, ${cafeData.profile.locationName.split(',')[0]}`;
+    
+    // Contact Info details
+    document.getElementById('contact-address').innerHTML = cafeData.profile.address.replace(/,/g, ',<br>');
+    document.getElementById('contact-hours').innerText = cafeData.profile.hours;
+    document.getElementById('contact-cuisine').innerText = cafeData.profile.cuisine;
+    
+    // Rating badges in reviews
+    document.getElementById('reviews-stars-label').innerText = cafeData.profile.ratingStars;
+    document.getElementById('reviews-count-label').innerText = cafeData.profile.ratingBadge;
+
+    // 2. Render contact buttons
+    const whatsappLink = `https://wa.me/${cafeData.profile.whatsapp}`;
+    const callLink = `tel:${cafeData.profile.phone.replace(/\s+/g, '')}`;
+    const contactLinksContainer = document.getElementById('contact-links-container');
+    contactLinksContainer.innerHTML = `
+      <a href="${whatsappLink}" target="_blank" class="contact-btn btn-whatsapp">💬 WhatsApp</a>
+      <a href="${callLink}" class="contact-btn btn-call">📞 Call Us</a>
+      <a href="${cafeData.profile.instagram}" target="_blank" class="contact-btn btn-insta">📸 Instagram</a>
+    `;
+
+    // 3. Render maps placeholder directions
+    const mapsLink = `https://maps.google.com/?q=${cafeData.profile.mapsQuery}`;
+    const mapContainer = document.getElementById('map-container');
+    mapContainer.innerHTML = `
+      <div class="map-address">${cafeData.profile.name}, ${cafeData.profile.locationName.split(',')[0]}</div>
+      <div style="color:var(--muted);font-size:0.85rem;margin:0.4rem 0 1rem;">${cafeData.profile.address.split(',')[0] + ', ' + cafeData.profile.locationName}</div>
+      <a href="${mapsLink}" target="_blank" class="map-link">Get Directions →</a>
+    `;
+
+    // 4. Render Menu Tabs & Items
+    renderMenuTabs();
+    renderMenuItems();
+
+    // 5. Render Gallery
+    renderGallery();
+
+    // 6. Render Reviews
+    renderReviews();
+    
+    // Bind Scroll observer again for dynamic elements
+    const dynamicReveals = document.querySelectorAll('.reveal');
+    const dynamicObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    dynamicReveals.forEach(r => dynamicObs.observe(r));
+  }
+
+  // Format name logo (splits the last word to gold span)
+  function formatLogoText(name) {
+    const words = name.split(' ');
+    if (words.length <= 1) return name;
+    const lastWord = words.pop();
+    return `${words.join(' ')} <span>${lastWord}</span>`;
+  }
+
+  // Format titles into Playfair typography with italics
+  function formatHeadingHtml(text) {
+    const sentences = text.split('.');
+    let primary = sentences[0];
+    if (primary.includes(' ')) {
+      const words = primary.split(' ');
+      const lastWords = words.splice(-2).join(' ');
+      return `${words.join(' ')}<br><em>${lastWords}.</em>`;
+    }
+    return primary;
+  }
+
+  // ==========================================================================
+  // Dynamic Render Modules
+  // ==========================================================================
+  
+  // Render Menu Tabs
+  function renderMenuTabs() {
+    const tabsContainer = document.getElementById('menu-tabs-container');
+    
+    // Collect all unique categories
+    const categories = [{ id: 'all', name: 'All Menu' }];
+    const seen = new Set();
+    cafeData.menu.forEach(item => {
+      if (!seen.has(item.category)) {
+        seen.add(item.category);
+        categories.push({ id: item.category, name: item.categoryName });
+      }
+    });
+
+    tabsContainer.innerHTML = categories.map(cat => `
+      <li class="menu-tab-item ${activeMenuCategory === cat.id ? 'active' : ''}">
+        <button onclick="filterMenuCategory('${cat.id}')">${cat.name}</button>
+      </li>
+    `).join('');
+  }
+
+  // Filter Menu Category
+  function filterMenuCategory(catId) {
+    activeMenuCategory = catId;
+    renderMenuTabs();
+    
+    const track = document.getElementById('menu-track');
+    const items = track.querySelectorAll('.sig-item');
+    
+    // Smooth transition
+    items.forEach(it => it.classList.add('fade-out'));
+    
+    setTimeout(() => {
+      renderMenuItems();
+      const newItems = track.querySelectorAll('.sig-item');
+      newItems.forEach(it => it.classList.add('fade-out'));
+      // Flush layout
+      track.offsetHeight;
+      newItems.forEach(it => it.classList.remove('fade-out'));
+    }, 250);
+  }
+
+  // Render Menu Scroll items
+  function renderMenuItems() {
+    const track = document.getElementById('menu-track');
+    
+    const filteredMenu = activeMenuCategory === 'all' 
+      ? cafeData.menu 
+      : cafeData.menu.filter(item => item.category === activeMenuCategory);
+      
+    if (filteredMenu.length === 0) {
+      track.innerHTML = `<div class="cms-empty-state" style="width: 100%;">No items added under this category yet.</div>`;
+      return;
+    }
+
+    track.innerHTML = filteredMenu.map(item => `
+      <div class="sig-item">
+        <img class="sig-img" src="${item.image}" alt="${item.name}">
+        <div class="sig-overlay"></div>
+        <div class="sig-content">
+          <div class="sig-label">${item.tag}</div>
+          <div class="sig-name">${item.name}</div>
+          <div class="sig-desc">${item.description}</div>
+          <div class="sig-price">${item.price}</div>
+        </div>
+      </div>
+    `).join('');
+
+    // Re-initialize drag scrolling listeners
+    initDragScrolling(track);
+  }
+
+  // Render Gallery Tiles
+  function renderGallery() {
+    const container = document.getElementById('gallery-grid-container');
+    if (cafeData.gallery.length === 0) {
+      container.innerHTML = `<div class="cms-empty-state" style="grid-column: span 4;">No images in the gallery yet.</div>`;
+      return;
+    }
+    
+    container.innerHTML = cafeData.gallery.map((tile, idx) => `
+      <div class="gallery-item reveal reveal-delay-${idx % 3}">
+        <img class="gallery-img" src="${tile.image}" alt="${tile.title}">
+        <div class="gallery-label">${tile.title}</div>
+      </div>
+    `).join('');
+  }
+
+  // Render reviews cards
+  function renderReviews() {
+    const container = document.getElementById('reviews-grid-container');
+    if (cafeData.reviews.length === 0) {
+      container.innerHTML = `<div class="cms-empty-state" style="grid-column: span 3;">No customer reviews loaded yet.</div>`;
+      return;
+    }
+
+    container.innerHTML = cafeData.reviews.map((rev, idx) => `
+      <div class="review-card reveal reveal-delay-${idx}">
+        <div class="review-stars">${rev.stars}</div>
+        <p class="review-text">"${rev.text}"</p>
+        <div class="review-author">— ${rev.author} · ${rev.date}</div>
+      </div>
+    `).join('');
+  }
+
+  // Drag Scrolling utility
+  function initDragScrolling(trackElement) {
+    let isDown = false, startX, scrollLeft;
+    
+    // Clear old listeners by cloning element or replacing them
+    trackElement.addEventListener('mousedown', e => { 
+      isDown = true; 
+      startX = e.pageX - trackElement.offsetLeft; 
+      scrollLeft = trackElement.scrollLeft; 
+      trackElement.style.cursor = 'grabbing'; 
+    });
+    trackElement.addEventListener('mouseleave', () => { 
+      isDown = false; 
+      trackElement.style.cursor = ''; 
+    });
+    trackElement.addEventListener('mouseup', () => { 
+      isDown = false; 
+      trackElement.style.cursor = ''; 
+    });
+    trackElement.addEventListener('mousemove', e => {
+      if (!isDown) return; 
+      e.preventDefault();
+      const x = e.pageX - trackElement.offsetLeft;
+      trackElement.scrollLeft = scrollLeft - (x - startX) * 1.5;
+    });
+  }
+
+  // Navbar scroll sticky
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 60);
   });
-
-  // Reveal on scroll
-  const reveals = document.querySelectorAll('.reveal');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.12 });
-  reveals.forEach(r => obs.observe(r));
 
   // Mouse glow follow on hero
   const hero = document.getElementById('hero');
@@ -1076,17 +1724,408 @@
     hero.style.setProperty('--my', y + '%');
   });
 
-  // Signature scroll with drag
-  const track = document.querySelector('.sig-scroll-track');
-  let isDown = false, startX, scrollLeft;
-  track.addEventListener('mousedown', e => { isDown = true; startX = e.pageX - track.offsetLeft; scrollLeft = track.scrollLeft; track.style.cursor = 'grabbing'; });
-  track.addEventListener('mouseleave', () => { isDown = false; track.style.cursor = ''; });
-  track.addEventListener('mouseup', () => { isDown = false; track.style.cursor = ''; });
-  track.addEventListener('mousemove', e => {
-    if (!isDown) return; e.preventDefault();
-    const x = e.pageX - track.offsetLeft;
-    track.scrollLeft = scrollLeft - (x - startX) * 1.5;
-  });
+
+  // ==========================================================================
+  // Cafe Craft CMS Dashboard Panel Javascript Logic
+  // ==========================================================================
+  
+  // Toggle Admin panel view
+  function toggleCMS() {
+    const overlay = document.getElementById('cms-overlay');
+    const isActivating = !overlay.classList.contains('active');
+    
+    if (isActivating) {
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      // Load current inputs values
+      populateAdminFields();
+    } else {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      closeMenuModal();
+      closeReviewModal();
+    }
+  }
+
+  // Switch tabs in sidebar
+  function switchTab(tabId) {
+    // Buttons active
+    const buttons = document.querySelectorAll('.cms-tab-btn');
+    buttons.forEach(btn => {
+      if (btn.getAttribute('data-tab') === tabId) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+
+    // Content active
+    const contents = document.querySelectorAll('.cms-tab-content');
+    contents.forEach(content => {
+      if (content.getAttribute('id') === 'tab-' + tabId) content.classList.add('active');
+      else content.classList.remove('active');
+    });
+    
+    // Speicifc tabs loaders
+    if (tabId === 'menu') renderAdminMenuList();
+    if (tabId === 'gallery') renderAdminGalleryGrid();
+    if (tabId === 'reviews') renderAdminReviewsList();
+    if (tabId === 'sync') renderAdminCodeSyncBox();
+  }
+
+  // Populates input fields inside CMS with local storage data
+  function populateAdminFields() {
+    const prof = cafeData.profile;
+    document.getElementById('inp-name').value = prof.name;
+    document.getElementById('inp-tagline').value = prof.tagline;
+    document.getElementById('inp-subtagline').value = prof.subtagline;
+    document.getElementById('inp-location').value = prof.locationName;
+    document.getElementById('inp-cuisine').value = prof.cuisine;
+    document.getElementById('inp-address').value = prof.address;
+    document.getElementById('inp-hours').value = prof.hours;
+    document.getElementById('inp-hours-short').value = prof.hoursShort;
+    document.getElementById('inp-phone').value = prof.phone;
+    document.getElementById('inp-whatsapp').value = prof.whatsapp;
+    document.getElementById('inp-instagram').value = prof.instagram;
+    document.getElementById('inp-maps').value = prof.mapsQuery;
+    document.getElementById('inp-rating-text').value = prof.ratingBadge;
+    document.getElementById('inp-rating-stars').value = prof.ratingStars;
+  }
+
+  // Toast notifier
+  function triggerToast(message, icon = '✨') {
+    const toast = document.getElementById('cms-toast');
+    document.getElementById('cms-toast-icon').innerText = icon;
+    document.getElementById('cms-toast-msg').innerText = message;
+    
+    toast.classList.add('active');
+    setTimeout(() => {
+      toast.classList.remove('active');
+    }, 3000);
+  }
+
+  // Save General Profile Info
+  function saveGeneralSettings() {
+    cafeData.profile.name = document.getElementById('inp-name').value;
+    cafeData.profile.tagline = document.getElementById('inp-tagline').value;
+    cafeData.profile.subtagline = document.getElementById('inp-subtagline').value;
+    cafeData.profile.locationName = document.getElementById('inp-location').value;
+    cafeData.profile.cuisine = document.getElementById('inp-cuisine').value;
+    cafeData.profile.address = document.getElementById('inp-address').value;
+    cafeData.profile.hours = document.getElementById('inp-hours').value;
+    cafeData.profile.hoursShort = document.getElementById('inp-hours-short').value;
+    cafeData.profile.phone = document.getElementById('inp-phone').value;
+    cafeData.profile.whatsapp = document.getElementById('inp-whatsapp').value;
+    cafeData.profile.instagram = document.getElementById('inp-instagram').value;
+    cafeData.profile.mapsQuery = document.getElementById('inp-maps').value;
+    cafeData.profile.ratingBadge = document.getElementById('inp-rating-text').value;
+    cafeData.profile.ratingStars = document.getElementById('inp-rating-stars').value;
+    
+    // Save to local persistence
+    localStorage.setItem('cafe_craft_cms_data', JSON.stringify(cafeData));
+    
+    // Update live page view
+    renderSite();
+    triggerToast("General Profile saved successfully!");
+  }
+
+  // ==================== CMS Menu CRUD Operations ====================
+  
+  function renderAdminMenuList() {
+    const list = document.getElementById('cms-menu-list');
+    if (cafeData.menu.length === 0) {
+      list.innerHTML = `<div class="cms-empty-state">No menu items created. Add one above!</div>`;
+      return;
+    }
+    
+    list.innerHTML = cafeData.menu.map(item => `
+      <div class="cms-item-row">
+        <div class="cms-item-info">
+          <img class="cms-item-thumb" src="${item.image}" alt="">
+          <div class="cms-item-details">
+            <div class="cms-item-name">${item.name}</div>
+            <div class="cms-item-meta">
+              <span>🏷️ ${item.categoryName}</span>
+              <span>💰 ${item.price}</span>
+            </div>
+          </div>
+        </div>
+        <div class="cms-item-actions">
+          <button class="cms-btn cms-btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.8rem;" onclick="editMenuItem('${item.id}')">✏️ Edit</button>
+          <button class="cms-btn cms-btn-danger" style="padding: 0.4rem 1rem; font-size: 0.8rem;" onclick="deleteMenuItem('${item.id}')">🗑️ Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function syncCategoryName(categoryVal) {
+    const categoryNames = {
+      'hot-coffee': 'Hot Coffee',
+      'cold-sips': 'Cold Sips',
+      'snacks': 'Bites',
+      'signatures': 'Signature'
+    };
+    document.getElementById('inp-menu-category-name').value = categoryNames[categoryVal] || 'Other';
+  }
+
+  function openMenuModal() {
+    document.getElementById('menu-editor-form').style.display = 'block';
+    document.getElementById('menu-form-title').innerText = "Add New Menu Item";
+    document.getElementById('inp-menu-id').value = '';
+    document.getElementById('inp-menu-name').value = '';
+    document.getElementById('inp-menu-price').value = '';
+    document.getElementById('inp-menu-category').value = 'hot-coffee';
+    document.getElementById('inp-menu-category-name').value = 'Hot Coffee';
+    document.getElementById('inp-menu-image').value = 'images/cappuccino.png';
+    document.getElementById('inp-menu-desc').value = '';
+  }
+
+  function closeMenuModal() {
+    document.getElementById('menu-editor-form').style.display = 'none';
+  }
+
+  function editMenuItem(itemId) {
+    const item = cafeData.menu.find(it => it.id === itemId);
+    if (!item) return;
+    
+    document.getElementById('menu-editor-form').style.display = 'block';
+    document.getElementById('menu-form-title').innerText = "Edit Menu Item";
+    
+    document.getElementById('inp-menu-id').value = item.id;
+    document.getElementById('inp-menu-name').value = item.name;
+    document.getElementById('inp-menu-price').value = item.price;
+    document.getElementById('inp-menu-category').value = item.category;
+    document.getElementById('inp-menu-category-name').value = item.categoryName;
+    document.getElementById('inp-menu-image').value = item.image;
+    document.getElementById('inp-menu-desc').value = item.description;
+  }
+
+  function saveMenuItem() {
+    const id = document.getElementById('inp-menu-id').value;
+    const name = document.getElementById('inp-menu-name').value;
+    const price = document.getElementById('inp-menu-price').value;
+    const category = document.getElementById('inp-menu-category').value;
+    const categoryName = document.getElementById('inp-menu-category-name').value;
+    const image = document.getElementById('inp-menu-image').value;
+    const description = document.getElementById('inp-menu-desc').value;
+    
+    if (!name || !price) {
+      alert("Please fill in the Item Name and Price fields.");
+      return;
+    }
+
+    if (id) {
+      // Edit mode
+      const idx = cafeData.menu.findIndex(it => it.id === id);
+      if (idx !== -1) {
+        cafeData.menu[idx] = { id, category, categoryName, name, price, description, image, tag: categoryName };
+        triggerToast(`Updated menu item: ${name}`);
+      }
+    } else {
+      // Add mode
+      const newId = 'menu-' + Date.now();
+      cafeData.menu.push({ id: newId, category, categoryName, name, price, description, image, tag: categoryName });
+      triggerToast(`Added menu item: ${name}`);
+    }
+
+    // Save and Render
+    localStorage.setItem('cafe_craft_cms_data', JSON.stringify(cafeData));
+    renderSite();
+    renderAdminMenuList();
+    closeMenuModal();
+  }
+
+  function deleteMenuItem(itemId) {
+    if (!confirm("Are you sure you want to delete this menu item?")) return;
+    
+    const idx = cafeData.menu.findIndex(it => it.id === itemId);
+    if (idx !== -1) {
+      const name = cafeData.menu[idx].name;
+      cafeData.menu.splice(idx, 1);
+      
+      localStorage.setItem('cafe_craft_cms_data', JSON.stringify(cafeData));
+      renderSite();
+      renderAdminMenuList();
+      triggerToast(`Deleted menu item: ${name}`, '🗑️');
+    }
+  }
+
+  // ==================== CMS Gallery Operations ====================
+  
+  function renderAdminGalleryGrid() {
+    const editor = document.getElementById('cms-gallery-grid-editor');
+    if (cafeData.gallery.length === 0) {
+      editor.innerHTML = `<div class="cms-empty-state">No gallery items configured.</div>`;
+      return;
+    }
+
+    editor.innerHTML = cafeData.gallery.map((tile, idx) => `
+      <div style="background: rgba(20,20,24,0.4); border: 1px solid rgba(232,184,109,0.1); border-radius:16px; padding: 1.5rem; display: flex; gap: 1.5rem; align-items: center; margin-bottom: 1rem;">
+        <img src="${tile.image}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(232,184,109,0.2);">
+        <div style="flex: 1; display:flex; flex-direction:column; gap:0.6rem;">
+          <label class="cms-label">Tile ${idx + 1} Image Caption / Title</label>
+          <div style="display:flex; gap:0.8rem;">
+            <input type="text" class="cms-input" style="flex:1;" id="inp-gal-${tile.id}" value="${tile.title}">
+            <button class="cms-btn" onclick="saveGalleryTitle('${tile.id}')">Save</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function saveGalleryTitle(tileId) {
+    const val = document.getElementById(`inp-gal-${tileId}`).value;
+    const idx = cafeData.gallery.findIndex(it => it.id === tileId);
+    if (idx !== -1) {
+      cafeData.gallery[idx].title = val;
+      localStorage.setItem('cafe_craft_cms_data', JSON.stringify(cafeData));
+      renderSite();
+      triggerToast("Gallery item caption updated!");
+    }
+  }
+
+  // ==================== CMS Reviews Operations ====================
+  
+  function renderAdminReviewsList() {
+    const list = document.getElementById('cms-reviews-list');
+    if (cafeData.reviews.length === 0) {
+      list.innerHTML = `<div class="cms-empty-state">No reviews loaded. Write a manual review above!</div>`;
+      return;
+    }
+
+    list.innerHTML = cafeData.reviews.map(rev => `
+      <div class="cms-item-row" style="align-items: flex-start;">
+        <div style="flex: 1;">
+          <div style="color: var(--gold); font-size:0.95rem; font-weight:500;">${rev.author}</div>
+          <div style="font-size:0.75rem; color: var(--muted); margin: 0.2rem 0 0.6rem;">📅 ${rev.date} · ⭐ ${rev.stars}</div>
+          <div style="font-size:0.9rem; color: var(--cream); font-style: italic; line-height: 1.5;">"${rev.text}"</div>
+        </div>
+        <div class="cms-item-actions">
+          <button class="cms-btn cms-btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.8rem;" onclick="editReviewItem('${rev.id}')">✏️ Edit</button>
+          <button class="cms-btn cms-btn-danger" style="padding: 0.4rem 1rem; font-size: 0.8rem;" onclick="deleteReviewItem('${rev.id}')">🗑️ Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openReviewModal() {
+    document.getElementById('review-editor-form').style.display = 'block';
+    document.getElementById('review-form-title').innerText = "Add Customer Review";
+    document.getElementById('inp-rev-id').value = '';
+    document.getElementById('inp-rev-author').value = '';
+    document.getElementById('inp-rev-date').value = `${new Date().toLocaleString('default', { month: 'short' })} ${new Date().getFullYear()}`;
+    document.getElementById('inp-rev-stars').value = '★★★★★';
+    document.getElementById('inp-rev-text').value = '';
+  }
+
+  function closeReviewModal() {
+    document.getElementById('review-editor-form').style.display = 'none';
+  }
+
+  function editReviewItem(revId) {
+    const rev = cafeData.reviews.find(it => it.id === revId);
+    if (!rev) return;
+    
+    document.getElementById('review-editor-form').style.display = 'block';
+    document.getElementById('review-form-title').innerText = "Edit Customer Review";
+    
+    document.getElementById('inp-rev-id').value = rev.id;
+    document.getElementById('inp-rev-author').value = rev.author;
+    document.getElementById('inp-rev-date').value = rev.date;
+    document.getElementById('inp-rev-stars').value = rev.stars;
+    document.getElementById('inp-rev-text').value = rev.text;
+  }
+
+  function saveReviewItem() {
+    const id = document.getElementById('inp-rev-id').value;
+    const author = document.getElementById('inp-rev-author').value;
+    const date = document.getElementById('inp-rev-date').value;
+    const stars = document.getElementById('inp-rev-stars').value;
+    const text = document.getElementById('inp-rev-text').value;
+    
+    if (!author || !text) {
+      alert("Please fill in both the Author Name and the Review Text.");
+      return;
+    }
+
+    if (id) {
+      // Edit mode
+      const idx = cafeData.reviews.findIndex(it => it.id === id);
+      if (idx !== -1) {
+        cafeData.reviews[idx] = { id, author, date, stars, text };
+        triggerToast(`Updated review from: ${author}`);
+      }
+    } else {
+      // Add mode
+      const newId = 'rev-' + Date.now();
+      cafeData.reviews.push({ id: newId, author, date, stars, text });
+      triggerToast(`Added review from: ${author}`);
+    }
+
+    // Save and Render
+    localStorage.setItem('cafe_craft_cms_data', JSON.stringify(cafeData));
+    renderSite();
+    renderAdminReviewsList();
+    closeReviewModal();
+  }
+
+  function deleteReviewItem(revId) {
+    if (!confirm("Are you sure you want to remove this review?")) return;
+    
+    const idx = cafeData.reviews.findIndex(it => it.id === revId);
+    if (idx !== -1) {
+      const author = cafeData.reviews[idx].author;
+      cafeData.reviews.splice(idx, 1);
+      
+      localStorage.setItem('cafe_craft_cms_data', JSON.stringify(cafeData));
+      renderSite();
+      renderAdminReviewsList();
+      triggerToast(`Removed review from: ${author}`, '🗑️');
+    }
+  }
+
+  // ==================== Dev Sync & Export Actions ====================
+  
+  function getCodeString() {
+    return `// Default Cafe Eleven CMS Database State\nconst DEFAULT_CAFE_DATA = ${JSON.stringify(cafeData, null, 2)};\n`;
+  }
+
+  function renderAdminCodeSyncBox() {
+    const box = document.getElementById('cms-data-js-preview');
+    box.textContent = getCodeString();
+  }
+
+  function copyDataJSCode() {
+    const code = getCodeString();
+    navigator.clipboard.writeText(code).then(() => {
+      triggerToast("data.js code copied to clipboard!", '📋');
+    }).catch(err => {
+      console.error('Failed to copy code: ', err);
+      alert("Unable to copy code to clipboard. Please select the text inside the code preview box and copy manually.");
+    });
+  }
+
+  function downloadDataJSFile() {
+    const code = getCodeString();
+    const blob = new Blob([code], { type: 'text/javascript' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'data.js';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    triggerToast("data.js file download triggered!", '💾');
+  }
+
+  function resetToDefaults() {
+    if (!confirm("WARNING: This will completely overwrite all your customizations and restore the fresh default database state. Are you sure you want to continue?")) return;
+    
+    localStorage.removeItem('cafe_craft_cms_data');
+    loadCafeData();
+    renderSite();
+    populateAdminFields();
+    
+    // Switch tabs to reload contents
+    switchTab('general');
+    triggerToast("CMS reset to factory defaults successfully!", '🔄');
+  }
 </script>
 </body>
 </html>
